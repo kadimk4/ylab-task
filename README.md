@@ -16,7 +16,7 @@ API предоставляет CRUD операции для `Menu`, `Submenu` и
 1. Установите все зависимости из `requirments.txt`
 2. Пропишите данные от базы данных в файле `.env`
 3. В терминале Ide пропишите
-alembic upgrade head`
+   > `alembic upgrade head`
 
 ## Запуск:
 
