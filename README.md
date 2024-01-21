@@ -1,6 +1,6 @@
 # FastAPI проект для Ylab
 
-Проект реализован на FastAPI и предоставляет CRUD операции для `Menu`, `Submenu` и `Dishes`
+API предоставляет CRUD операции для `Menu`, `Submenu` и `Dishes`
 
 ## Установка:
 
