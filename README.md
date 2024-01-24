@@ -46,6 +46,6 @@ API предоставляет CRUD операции для `Menu`, `Submenu` и
 
 3. Для запуска без тестов вводим
 
-   >>`docker-compose -f docker-compose.yml up --build`
+   > `docker-compose -f docker-compose.yml up --build`
 
 4. Перейдите по ссылке(в конце пропишите `/docs`) в терминале IDE либо в браузере `{ваш ipV4}:{ваш port}/docs`
