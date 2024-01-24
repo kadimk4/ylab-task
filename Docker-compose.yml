@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:15.1-alpine
+    env_file:
+      - .env-non-dev
+    environment:
+      POSTGRES_PASSWORD: "${DB_PASS}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_DB: "${DB_NAME}"
+    container_name: db_container
+    restart: always
+    ports:
+      - "5432:5432"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env-non-dev
+    environment:
+      POSTGRES_PASSWORD: "${DB_PASS}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_DB: "${DB_NAME}"
+    container_name: api_container
+    ports:
+      - "8000:8000"
+    command: sh -c "alembic upgrade head && gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
+    depends_on:
+      - db

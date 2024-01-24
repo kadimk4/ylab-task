@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.db import get_async_db
-from schemas.menu import MenuCreate
+from schemas.schemas import MenuCreate
 from services.crud import MenuCrud
 
 router = APIRouter(prefix='/api/v1/menus', tags=['Menus'])

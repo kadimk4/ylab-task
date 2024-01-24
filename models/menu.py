@@ -35,3 +35,6 @@ class Dishes(Base):
     price = sq.Column(sq.String, nullable=False)
     submenu_id = sq.Column(UUID(as_uuid=True), sq.ForeignKey('submenu.uuid'))
     submenu = relationship('Submenu', back_populates='dishes', single_parent=True, lazy='joined')
+
+
+metadata = Base.metadata

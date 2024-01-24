@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:15.1-alpine
+    env_file:
+      - .env-non-dev
+    environment:
+      POSTGRES_PASSWORD: "${DB_PASS}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_DB: "${DB_NAME}"
+    container_name: db_container_tests
+    restart: always
+    ports:
+      - "5432:5432"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile-tests
+    env_file:
+      - .env-non-dev
+    environment:
+      POSTGRES_PASSWORD: "${DB_PASS}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_DB: "${DB_NAME}"
+    container_name: api_container_tests
+    ports:
+      - "8000:8000"
+    command: sh -c "alembic upgrade head && pytest -v -s test/"
+    depends_on:
+      - db

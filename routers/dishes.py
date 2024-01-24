@@ -8,7 +8,7 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from models.db import get_async_db
-from schemas.menu import DishCreate
+from schemas.schemas import DishCreate
 from services.crud import DishCrud
 
 router = APIRouter(prefix='/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes', tags=['Dishes'])
