@@ -17,7 +17,7 @@ API предоставляет CRUD операции для `Menu`, `Submenu` и
    
   > `python -m venv venv`
 
-  > `venv\Scripts\activate.bat`
+  > `venv\Scripts\activate.bat` либо `venv\Scripts\activate`
 
 2. Установите все зависимости из `requirments.txt` с помощью
 
