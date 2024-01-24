@@ -19,7 +19,7 @@ API предоставляет CRUD операции для `Menu`, `Submenu` и
 
   > `venv\Scripts\activate.bat` либо `venv\Scripts\activate`
 
-2. Установите все зависимости из `requirments.txt` с помощью
+2. Установите все зависимости из `requirements.txt.txt` с помощью
 
   > `pip install -r requirments.txt`
 
