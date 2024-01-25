@@ -21,7 +21,7 @@ API предоставляет CRUD операции для `Menu`, `Submenu` и
 
 2. Установите все зависимости из `requirements.txt` с помощью
 
-   > `pip install -r requirments.txt`
+   > `pip install -r requirements.txt`
 
 3. Вставьте данные от базы данных в файле `.env`
 4. В терминале Ide пропишите (если не собираетесь использовать Docker)
