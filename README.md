@@ -15,16 +15,17 @@ API предоставляет CRUD операции для `Menu`, `Submenu` и
 
 1. Создайте и активируйте виртуальное окружение по след. командам
    
-  > `python -m venv venv`
+   > `python -m venv venv`
 
-  > `venv\Scripts\activate.bat` либо `venv\Scripts\activate`
+   > `venv\Scripts\activate.bat` либо `venv\Scripts\activate`
 
 2. Установите все зависимости из `requirements.txt` с помощью
 
-  > `pip install -r requirments.txt`
+   > `pip install -r requirments.txt`
 
 4. Вставьте данные от базы данных в файле `.env`
-5. В терминале Ide пропишите
+   > 5 шаг если вы собираетесь неиспользовать докер
+6. В терминале Ide пропишите
    > `alembic upgrade head`
 
 ## Запуск без Docker:
