@@ -3,29 +3,33 @@ services:
   db:
     image: postgres:15.1-alpine
     env_file:
-      - .env-non-dev
+      - .env-example
     environment:
       POSTGRES_PASSWORD: "${DB_PASS}"
       POSTGRES_USER: "${DB_USER}"
-      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_DB: "db"
+      POSTGRES_HOST: "db"
     container_name: db_container
     restart: always
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "db", "-U", "postgres" ]
+      interval: 10s
+      timeout: 30s
+      retries: 3
+      start_period: 80s
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - .env-non-dev
-    environment:
-      POSTGRES_PASSWORD: "${DB_PASS}"
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_DB: "${DB_NAME}"
+      - .env-example
     container_name: api_container
     ports:
       - "8000:8000"
     command: sh -c "alembic upgrade head && gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy

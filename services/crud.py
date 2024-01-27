@@ -95,6 +95,7 @@ class SubmenuCrud:
                 'id': str(submenu.uuid),
                 'title': submenu.title,
                 'description': submenu.description,
+                'menu_id': str(submenu.menu_id),
                 'dishes_count': len(submenu.dishes)
             }
 
@@ -134,7 +135,8 @@ class SubmenuCrud:
                 'id': str(submenu.uuid),
                 'title': submenu.title,
                 'description': submenu.description,
-                'menu_id': str(submenu.menu_id)
+                'menu_id': str(submenu.menu_id),
+                'dishes_count': len(submenu.dishes)
             }
 
     async def post(self, title: str = None, desc: str = None, menu_id: uuid = None) -> dict[str, str]:
@@ -146,7 +148,8 @@ class SubmenuCrud:
             'id': str(submenu.uuid),
             'title': submenu.title,
             'description': submenu.description,
-            'menu_id': str(submenu.menu_id)
+            'menu_id': str(submenu.menu_id),
+            'dishes_count': len(submenu.dishes)
         }
 
     async def delete(self, uuid_str: uuid = None) -> dict[str, str] | None:
@@ -158,7 +161,8 @@ class SubmenuCrud:
                 'id': str(submenu.uuid),
                 'title': submenu.title,
                 'description': submenu.description,
-                'menu_id': str(submenu.menu_id)
+                'menu_id': str(submenu.menu_id),
+                'dishes_count': len(submenu.dishes)
             }
 
 
@@ -188,7 +192,9 @@ class MenuCrud:
             return {
                 'id': str(menu.uuid),
                 'title': menu.title,
-                'description': menu.description
+                'description': menu.description,
+                'submenus_count': len(menu.submenus),
+                'dishes_count': sum(len(submenu.dishes) for submenu in menu.submenus)
             }
 
     async def get_all(self) -> list[dict[str, str]]:
@@ -231,7 +237,9 @@ class MenuCrud:
             return {
                 'id': str(menu.uuid),
                 'title': menu.title,
-                'description': menu.description
+                'description': menu.description,
+                'submenus_count': len(menu.submenus),
+                'dishes_count': sum(len(submenu.dishes) for submenu in menu.submenus)
             }
 
     async def post(self, title: str = None, desc: str = None) -> dict[str, str]:
@@ -242,5 +250,7 @@ class MenuCrud:
         return {
             'id': str(menu.uuid),
             'title': menu.title,
-            'description': menu.description
+            'description': menu.description,
+            'submenus_count': len(menu.submenus),
+            'dishes_count': sum(len(submenu.dishes) for submenu in menu.submenus)
         }
