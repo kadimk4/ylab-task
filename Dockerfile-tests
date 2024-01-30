@@ -8,7 +8,7 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-CMD ["pytest test/"]
+CMD ["alembic upgrade head && pytest test/"]
 
 COPY . .
 
