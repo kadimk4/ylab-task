@@ -49,3 +49,6 @@ API предоставляет CRUD операции для `Menu`, `Submenu` и
 3. Для запуска апи тестов пропишите в терминале
 
    > `docker-compose -f docker-compose-tests.yml up --build`
+
+Тестовый сценарий лежит в test/test_dishes_submenus_count
+Сложный орм запрос в services/crud.py -> class Menu -> функция get
