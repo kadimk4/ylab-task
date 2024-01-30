@@ -1,9 +1,10 @@
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import select, func, distinct
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.menu import Dishes, Submenu, Menu
+from sqlalchemy.orm import selectinload
 
 
 class DishCrud:
@@ -172,15 +173,30 @@ class MenuCrud:
         self.db = db
 
     async def get(self, uuid_str: uuid = None) -> dict[str, str] | None:
-        menu = await self.db.get(Menu, uuid_str)
-        if menu:
-            return {
-                'id': str(menu.uuid),
-                'title': menu.title,
-                'description': menu.description,
-                'submenus_count': len(menu.submenus),
-                'dishes_count': sum(len(submenu.dishes) for submenu in menu.submenus)
-            }
+        menu_info = (
+            await self.db.execute(
+                select(
+                    Menu.uuid,
+                    Menu.title,
+                    Menu.description,
+                    func.count(distinct(Submenu.uuid)).label('submenu_count'),
+                    func.count(distinct(Dishes.uuid)).label('dish_count'),
+                )
+                .select_from(Menu)
+                .outerjoin(Submenu)
+                .outerjoin(Dishes, Submenu.dishes)
+                .filter(Menu.uuid == uuid_str)
+                .group_by(Menu.uuid, Menu.title, Menu.description)
+            )
+        ).first()
+        menu_uuid, title, description, submenu_count, dish_count = menu_info
+        return {
+            'id': str(menu_uuid),
+            'title': title,
+            'description': description,
+            'submenus_count': submenu_count,
+            'dishes_count': dish_count
+        }
 
     async def patch(self, uuid_str: uuid = None, title: str = None, desc: str = None) -> dict[str, str] | None:
         menu = await self.db.get(Menu, uuid_str)

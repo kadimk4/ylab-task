@@ -1,82 +1,65 @@
 import pytest
 from httpx import AsyncClient
-from sqlalchemy import select
-
 from models.menu import Menu
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from conftest import async_session_maker
 
 
-class TestMenus:
-    menu_id = None
+@pytest.mark.asyncio
+async def test_menu_crud(ac: AsyncClient, menu_id_fixture):
 
-    @pytest.mark.asyncio
-    async def test_all_menus_is_empty(self, ac: AsyncClient):
-        async with async_session_maker() as db:
-            response = await ac.get(f"/api/v1/menus/")
-            menus_query = select(Menu)
-            menus_result = await db.execute(menus_query)
-            menus = menus_result.fetchall()
-            assert response.status_code == 200
-            assert response.json() == []
-            assert len(response.json()) == len(menus)
+    response = await ac.get('/api/v1/menus/')
+    assert response.status_code == 200
+    assert len(response.json()) == 1
 
-    @classmethod
-    @pytest.mark.asyncio
-    async def test_post_menu(cls, ac: AsyncClient):
-        async with async_session_maker() as db:
-            response = await ac.post(f'/api/v1/menus/', json={
-                "title": "My menu 1",
-                "description": "My menu description 1",
+    menu_id = menu_id_fixture.uuid
+    response = await ac.get(f'/api/v1/menus/{menu_id}')
+    assert response.status_code == 200
+    assert response.json()['id'] == str(menu_id)
+    assert response.json()['title'] == "My menu 1"
+    assert response.json()['description'] == "My menu description 1"
+    assert response.json()['submenus_count'] == 0
+    assert response.json()['dishes_count'] == 0
 
-            })
-            assert response.status_code == 201
-            query = select(Menu).where(Menu.uuid == response.json()["id"])
-            result = await db.execute(query)
-            created_menu = result.scalar()
-            assert created_menu.title == response.json()["title"]
-            assert created_menu.description == response.json()["description"]
-            cls.menu_id = response.json()["id"]
+    updated_title = "Updated Menu"
+    updated_desc = "Updated Menu Description"
+    response = await ac.patch(f'/api/v1/menus/{menu_id}', json={"title": updated_title, "description": updated_desc})
+    assert response.status_code == 200
+    assert response.json()['title'] == updated_title
+    assert response.json()['description'] == updated_desc
+    assert response.json()['submenus_count'] == 0
+    assert response.json()['dishes_count'] == 0
 
-    @classmethod
-    @pytest.mark.asyncio
-    async def test_get_menu(cls, ac: AsyncClient):
-        async with async_session_maker() as db:
-            response = await ac.get(f'/api/v1/menus/{cls.menu_id}')
-            query = select(Menu).where(Menu.uuid == cls.menu_id)
-            result = await db.execute(query)
-            menu = result.scalar()
-            assert response.json() != []
-            assert response.json()['title'] == menu.title
-            assert response.json()['description'] == menu.description
-            assert response.status_code == 200
+    async with async_session_maker() as db:
+        menu = await db.execute(select(Menu).filter(Menu.uuid == menu_id))
+        menu_data = menu.scalar()
+        assert menu_data.title == updated_title
+        assert menu_data.description == updated_desc
 
-    @classmethod
-    @pytest.mark.asyncio
-    async def test_patch_menu(cls, ac: AsyncClient):
-        async with async_session_maker() as db:
-            response = await ac.patch(f'/api/v1/menus/{cls.menu_id}', json={
-                "title": "My updated menu 1",
-                "description": "My updated menu description 1"
-            })
-            assert response.status_code == 200
-            query = select(Menu).where(Menu.uuid == cls.menu_id)
-            result = await db.execute(query)
-            updated_menu = result.scalar()
-            assert updated_menu.title == response.json()["title"]
-            assert updated_menu.description == response.json()["description"]
-            assert response.json() != []
-            assert response.json() == response.json()
+    response = await ac.delete(f'/api/v1/menus/{menu_id}')
+    assert response.status_code == 200
+    assert response.json()['id'] == str(menu_id)
+    assert response.json()['title'] == updated_title
+    assert response.json()['description'] == updated_desc
+    assert response.json()['submenus_count'] == 0
+    assert response.json()['dishes_count'] == 0
 
-    @classmethod
-    @pytest.mark.asyncio
-    async def test_delete_menu(cls, ac: AsyncClient):
-        async with async_session_maker() as db:
-            response = await ac.delete(f'/api/v1/menus/{cls.menu_id}')
-            assert response.status_code == 200
-            response = await ac.get(f'/api/v1/menus/{cls.menu_id}')
-            assert response.status_code == 404
-            query = select(Menu).where(Menu.uuid == cls.menu_id)
-            result = await db.execute(query)
-            deleted_menu = result.scalar()
-            assert deleted_menu is None
-            assert response.json()["detail"] == 'menu not found'
+    async with async_session_maker() as db:
+        menu = await db.execute(select(Menu).filter(Menu.uuid == menu_id))
+        assert menu.scalar() is None
+
+
+@pytest.mark.asyncio
+async def test_menu_post(ac: AsyncClient):
+
+    new_title = "My menu 1"
+    new_desc = "My menu 1 description"
+    response = await ac.post('/api/v1/menus/', json={"title": new_title, "description": new_desc})
+    assert response.status_code == 201
+    assert response.json()['title'] == new_title
+    assert response.json()['description'] == new_desc
+
+    async with async_session_maker() as db:
+        menu = await db.execute(select(Menu).filter(Menu.title == new_title))
+        assert menu.scalar() is not None

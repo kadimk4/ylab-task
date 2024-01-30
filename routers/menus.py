@@ -48,3 +48,10 @@ async def patch_menu(uuid_str: Optional[uuid.UUID] | None, item: MenuCreate | No
 async def delete_menu(uuid_str: Optional[uuid.UUID] | None, db: AsyncSession = Depends(get_async_db)) -> JSONResponse:
     response = MenuCrud(db)
     return JSONResponse(content=await response.delete(uuid_str), status_code=status.HTTP_200_OK)
+
+
+@router.get('/{uuid_str}/count')
+async def get_submenus_dishes_count(uuid_str: Optional[uuid.UUID] | None, db: AsyncSession = Depends(get_async_db)) -> JSONResponse:
+    response = MenuCrud(db)
+    res = await response.submenus_dishes_count(uuid_str)
+    return JSONResponse(content=res, status_code=200)

@@ -4,6 +4,7 @@ from typing import AsyncGenerator
 import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
@@ -14,7 +15,7 @@ from config import (DB_HOST, DB_NAME, DB_PASS, DB_PORT,
 from main import app
 
 from models.db import get_async_db
-from models.menu import metadata
+from models.menu import metadata, Menu, Submenu, Dishes
 
 # DATABASE
 db_url_test = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
@@ -57,3 +58,96 @@ client = TestClient(app)
 async def ac() -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
+
+
+@pytest.fixture(scope="session")
+async def menu_id_fixture(ac: AsyncClient):
+    menu_response = await ac.post('/api/v1/menus/', json={
+        "title": "My menu 1",
+        "description": "My menu description 1"
+    })
+    assert menu_response.status_code == 201
+    menu_id = menu_response.json()['id']
+
+    async with async_session_maker() as session:
+        stmt = select(Menu).filter(Menu.uuid == menu_id)
+        result = await session.execute(stmt)
+        menu = result.scalar()
+        assert menu is not None
+
+    return menu
+
+
+@pytest.fixture(scope="session")
+async def submenu_id_fixture(ac: AsyncClient):
+    menu_response = await ac.post('/api/v1/menus/', json={
+        "title": "My menu 1",
+        "description": "My menu description 1"
+    })
+    assert menu_response.status_code == 201
+    menu_id = menu_response.json()['id']
+
+    async with async_session_maker() as session:
+        stmt = select(Menu).filter(Menu.uuid == menu_id)
+        result = await session.execute(stmt)
+        menu = result.scalar()
+        assert menu is not None
+
+    submenu_response = await ac.post(f'/api/v1/menus/{menu_id}/submenus/', json={
+        "title": "My submenu 1",
+        "description": "My submenu description 1"
+    })
+    assert submenu_response.status_code == 201
+    submenu_id = submenu_response.json()['id']
+
+    async with async_session_maker() as session:
+        stmt = select(Submenu).filter(Submenu.uuid == submenu_id)
+        result = await session.execute(stmt)
+        submenu = result.scalar()
+        assert submenu is not None
+
+    return menu, submenu
+
+
+@pytest.fixture(scope="session")
+async def dish_id_fixture(ac: AsyncClient):
+    menu_response = await ac.post('/api/v1/menus/', json={
+        "title": "My menu 1",
+        "description": "My menu description 1"
+    })
+    assert menu_response.status_code == 201
+    menu_id = menu_response.json()['id']
+
+    async with async_session_maker() as session:
+        stmt = select(Menu).filter(Menu.uuid == menu_id)
+        result = await session.execute(stmt)
+        menu = result.scalar()
+        assert menu is not None
+
+    submenu_response = await ac.post(f'/api/v1/menus/{menu_id}/submenus/', json={
+        "title": "My submenu 1",
+        "description": "My submenu description 1"
+    })
+    assert submenu_response.status_code == 201
+    submenu_id = submenu_response.json()['id']
+
+    async with async_session_maker() as session:
+        stmt = select(Submenu).filter(Submenu.uuid == submenu_id)
+        result = await session.execute(stmt)
+        submenu = result.scalar()
+        assert submenu is not None
+
+    dish_response = await ac.post(f'/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/', json={
+        "title": "My dish 1",
+        "description": "My dish description 1",
+        "price": "12.50"
+    })
+    assert dish_response.status_code == 201
+    dish_id = dish_response.json()['id']
+    async with async_session_maker() as session:
+        stmt = select(Dishes).filter(Dishes.uuid == dish_id)
+        result = await session.execute(stmt)
+        dish = result.scalar()
+        assert dish is not None
+
+    return menu, submenu, dish
