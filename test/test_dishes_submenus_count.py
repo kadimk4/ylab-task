@@ -52,13 +52,13 @@ async def test_dish_submenu_count(ac: AsyncClient):
         assert dish_2.status_code == 201
         dish2_id = dish_2.json()['id']
 
-        #
+
         query = select(Dishes)
         result = await db.execute(query)
         created_dishes = result.unique().scalars().all()
 
         assert len(created_dishes) == 2
-        #
+
 
         menu = await ac.get(f'/api/v1/menus/{menu_id}')
         assert menu.status_code == 200

@@ -37,7 +37,6 @@ async def test_dish_crud(ac: AsyncClient, dish_id_fixture):
         assert dish_data.description == updated_desc
         assert dish_data.price == updated_price
 
-    # Test DELETE dish
     response = await ac.delete(f'/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}')
     assert response.status_code == 200
     assert response.json()['id'] == str(dish_id)
@@ -45,7 +44,6 @@ async def test_dish_crud(ac: AsyncClient, dish_id_fixture):
     assert response.json()['description'] == updated_desc
     assert response.json()['price'] == updated_price
 
-    # Verify deletion in the database
     async with async_session_maker() as db:
         dish = await db.execute(select(Dishes).filter(Dishes.uuid == dish_id))
         assert dish.scalar() is None
@@ -65,7 +63,6 @@ async def test_dish_post(ac: AsyncClient, dish_id_fixture):
     assert response.json()['description'] == new_desc
     assert response.json()['price'] == new_price
 
-    # Verify creation in the database
     async with async_session_maker() as db:
         dish = await db.execute(select(Dishes).filter(Dishes.title == new_title))
         assert dish.scalar() is not None

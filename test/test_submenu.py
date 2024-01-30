@@ -44,7 +44,6 @@ async def test_submenu_crud(ac: AsyncClient, submenu_id_fixture, menu_id_fixture
     assert response.json()['menu_id'] == str(menu_id)
     assert response.json()['dishes_count'] == 0
 
-    # Verify deletion in the database
     async with async_session_maker() as db:
         submenu = await db.execute(select(Submenu).filter(Submenu.uuid == submenu_id))
         assert submenu.scalar() is None
