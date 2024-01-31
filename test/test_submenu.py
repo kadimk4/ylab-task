@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
 from sqlalchemy import select
-from models.menu import Submenu
+from src.db.models import Submenu
 from conftest import async_session_maker
 
 

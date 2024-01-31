@@ -3,8 +3,7 @@ import uuid
 from sqlalchemy import select, func, distinct
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.menu import Dishes, Submenu, Menu
-from sqlalchemy.orm import selectinload
+from src.db.models import Dishes, Submenu, Menu
 
 
 class DishCrud:

@@ -5,9 +5,9 @@ from fastapi import APIRouter, status, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.db import get_async_db
-from schemas.schemas import MenuCreate
-from services.crud import MenuCrud
+from src.db.database import get_async_db
+from src.api.schemas.schemas import MenuCreate
+from src.api.services.crud import MenuCrud
 
 router = APIRouter(prefix='/api/v1/menus', tags=['Menus'])
 

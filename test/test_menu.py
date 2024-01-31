@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient
-from models.menu import Menu
+from src.db.models import Menu
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from conftest import async_session_maker

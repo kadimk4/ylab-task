@@ -14,8 +14,8 @@ from config import (DB_HOST, DB_NAME, DB_PASS, DB_PORT,
                         DB_USER)
 from main import app
 
-from models.db import get_async_db
-from models.menu import metadata, Menu, Submenu, Dishes
+from src.db.database import get_async_db
+from src.db.models import metadata, Menu, Submenu, Dishes
 
 # DATABASE
 db_url_test = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
